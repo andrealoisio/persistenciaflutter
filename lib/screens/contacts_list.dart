@@ -43,7 +43,7 @@ class _ContactsListState extends State<ContactsList> {
               return ListView.builder(
                 itemBuilder: (context, index) {
                   final Contact contact = contacts[index];
-                  return ContactItem(contact);
+                  return _ContactItem(contact);
                 },
                 itemCount: contacts.length,
               );
@@ -67,10 +67,10 @@ class _ContactsListState extends State<ContactsList> {
   }
 }
 
-class ContactItem extends StatelessWidget {
+class _ContactItem extends StatelessWidget {
   final Contact _contact;
 
-  const ContactItem(this._contact);
+  const _ContactItem(this._contact);
 
   @override
   Widget build(BuildContext context) {
