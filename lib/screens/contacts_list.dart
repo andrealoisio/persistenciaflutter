@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:persistenciaflutter/database/app_database.dart';
 import 'package:persistenciaflutter/model/contact.dart';
 import 'package:persistenciaflutter/screens/contact_form.dart';
 
@@ -11,38 +12,78 @@ class ContactsList extends StatefulWidget {
 class _ContactsListState extends State<ContactsList> {
   @override
   Widget build(BuildContext context) {
+    // contacts.add(Contact(0, 'André', 1234));
     return Scaffold(
       appBar: AppBar(
         title: Text('Contacts'),
       ),
-      body: ListView(
-        children: <Widget>[
-          Card(
-            child: ListTile(
-              title: Text(
-                'André',
-                style: TextStyle(fontSize: 24.0),
-              ),
-              subtitle: Text(
-                '1000',
-                style: TextStyle(fontSize: 16.0),
-              ),
-            ),
-          ),
-        ],
+      body: FutureBuilder<List<Contact>>(
+        initialData: List(),
+        future: Future.delayed(Duration(seconds: 1)).then((value) => findAll()),
+        builder: (context, snapshot) {
+          switch (snapshot.connectionState) {
+            case ConnectionState.none:
+              break;
+            case ConnectionState.waiting:
+              return Center(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: <Widget>[
+                    CircularProgressIndicator(),
+                    Text('Loading'),
+                  ],
+                ),
+              );
+              break;
+            case ConnectionState.active:
+              break;
+            case ConnectionState.done:
+              final List<Contact> contacts = snapshot.data;
+              return ListView.builder(
+                itemBuilder: (context, index) {
+                  final Contact contact = contacts[index];
+                  return _contactItem(contact);
+                },
+                itemCount: contacts.length,
+              );
+              break;
+          }
+          return Text('Unknown error');
+        },
+        
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
           Navigator.of(context)
               .push(MaterialPageRoute(builder: (context) => ContactForm()))
-              .then((contact) {
-            debugPrint(contact.toString());
-            if (contact != null) {
-              widget._contactList.add(contact);
-            }
-          });
+              .then((value) {
+                setState(() {});
+              });
         },
         child: Icon(Icons.add),
+      ),
+    );
+  }
+}
+
+class _contactItem extends StatelessWidget {
+  final Contact _contact;
+
+  const _contactItem(this._contact);
+
+  @override
+  Widget build(BuildContext context) {
+    return Card(
+      child: ListTile(
+        title: Text(
+          _contact.name,
+          style: TextStyle(fontSize: 24.0),
+        ),
+        subtitle: Text(
+          _contact.accountNumber.toString(),
+          style: TextStyle(fontSize: 16.0),
+        ),
       ),
     );
   }

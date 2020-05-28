@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:persistenciaflutter/database/app_database.dart';
 import 'package:persistenciaflutter/model/contact.dart';
 
 class ContactForm extends StatefulWidget {
@@ -50,10 +51,11 @@ class _ContactFormState extends State<ContactForm> {
                   child: RaisedButton(
                     onPressed: () {
                       final String name = _nameController.text;
-                      final int accountNumber =
-                          int.tryParse(_accountNumberController.text);
-                      final newContact = Contact(name, accountNumber);
-                      Navigator.pop(context, newContact);
+                      final int accountNumber = int.tryParse(_accountNumberController.text);
+                      final newContact = Contact(0, name, accountNumber);
+                      save(newContact).then((id) {
+                        Navigator.pop(context);
+                      });
                     },
                     child: Text('Create'),
                   ),
