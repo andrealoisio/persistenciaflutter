@@ -1,15 +1,15 @@
 import 'package:flutter/material.dart';
-import 'package:persistenciaflutter/database/app_database.dart';
+import 'package:persistenciaflutter/database/dao/contact_dao.dart';
 import 'package:persistenciaflutter/model/contact.dart';
 import 'package:persistenciaflutter/screens/contact_form.dart';
 
 class ContactsList extends StatefulWidget {
-  final List<Contact> _contactList = List();
   @override
   _ContactsListState createState() => _ContactsListState();
 }
 
 class _ContactsListState extends State<ContactsList> {
+  final ContactDao _contactDao = ContactDao();
   @override
   Widget build(BuildContext context) {
     // contacts.add(Contact(0, 'André', 1234));
@@ -19,7 +19,7 @@ class _ContactsListState extends State<ContactsList> {
       ),
       body: FutureBuilder<List<Contact>>(
         initialData: List(),
-        future: Future.delayed(Duration(seconds: 1)).then((value) => findAll()),
+        future: Future.delayed(Duration(seconds: 1)).then((value) => _contactDao.findAll()),
         builder: (context, snapshot) {
           switch (snapshot.connectionState) {
             case ConnectionState.none:
@@ -43,7 +43,7 @@ class _ContactsListState extends State<ContactsList> {
               return ListView.builder(
                 itemBuilder: (context, index) {
                   final Contact contact = contacts[index];
-                  return _contactItem(contact);
+                  return ContactItem(contact);
                 },
                 itemCount: contacts.length,
               );
@@ -67,10 +67,10 @@ class _ContactsListState extends State<ContactsList> {
   }
 }
 
-class _contactItem extends StatelessWidget {
+class ContactItem extends StatelessWidget {
   final Contact _contact;
 
-  const _contactItem(this._contact);
+  const ContactItem(this._contact);
 
   @override
   Widget build(BuildContext context) {
